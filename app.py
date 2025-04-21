@@ -79,7 +79,7 @@ with st.sidebar:
     
     st.markdown("## Model Information")
     st.markdown("""
-    - Architecture: CNN
+    - Architecture: Efficient net V2M
     - Input size: 224×224 pixels
     - Training accuracy: ~95%
     """)
