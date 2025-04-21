@@ -1,9 +1,12 @@
 import streamlit as st
 import tensorflow as tf
+import streamlit as st
+import tensorflow as tf
 import numpy as np
 from PIL import Image
 import gdown
 import os
+import tensorflow_addons as tfa  # Make sure this import is present
 
 # Constants
 MODEL_H5 = "aiprojectmodel.h5"
@@ -16,12 +19,17 @@ if not os.path.exists(MODEL_H5):
     with st.spinner("📦 Downloading model..."):
         gdown.download(f"https://drive.google.com/uc?id={DRIVE_FILE_ID}", MODEL_H5, quiet=False)
 
-# Load model
-try:
-    model = tf.keras.models.load_model(MODEL_H5)
-except Exception as e:
-    st.error(f"Error loading model: {e}")
-    st.stop()
+# Define custom objects dictionary
+custom_objects = {
+    "SigmoidFocalCrossEntropy": tfa.losses.SigmoidFocalCrossEntropy
+}
+
+# Load model with custom objects
+with tf.keras.utils.custom_object_scope(custom_objects):
+    model = tf.keras.models.load_model(MODEL_H5, compile=False)
+
+# Rest of your code remains the same
+# ...
 
 # App UI
 st.title("🩸 Thalassemia Detection App")
