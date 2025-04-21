@@ -4,46 +4,40 @@ import numpy as np
 from PIL import Image
 import gdown
 import os
-import zipfile
 
 # Constants
-MODEL_ZIP = "aiprojectmodel.zip"
-MODEL_DIR = "aiprojectmodel"
-DRIVE_FILE_ID = "1AzFzmZkjasUFMjCC6DjGfAhbr6xP7FfB"
+MODEL_H5 = "aiprojectmodel.h5"
+DRIVE_FILE_ID = "1NdV8NUwQAEtASsaV8F31dc5nKobbS0AI"
 IMG_SIZE = (224, 224)
-THRESHOLD = 0.4914  # Change this if you found a better threshold
+THRESHOLD = 0.4914  # or replace with your best threshold
 
-# Download and unzip the model if not already present
-if not os.path.exists(MODEL_DIR):
-    with st.spinner("📦 Downloading and extracting model..."):
-        url = f"https://drive.google.com/uc?id={DRIVE_FILE_ID}"
-        gdown.download(url, MODEL_ZIP, quiet=False)
+# Download model if not present
+if not os.path.exists(MODEL_H5):
+    with st.spinner("📦 Downloading model..."):
+        gdown.download(f"https://drive.google.com/uc?id={DRIVE_FILE_ID}", MODEL_H5, quiet=False)
 
-        with zipfile.ZipFile(MODEL_ZIP, 'r') as zip_ref:
-            zip_ref.extractall(".")
+# Load model
+model = tf.keras.models.load_model(MODEL_H5, compile=False)
 
-# Load the model
-model = tf.keras.models.load_model(MODEL_DIR)
-
-# Streamlit UI
-st.title("🔬 Thalassemia Detection")
+# App UI
+st.title("🩸 Thalassemia Detection App")
 st.write("Upload a blood smear image to detect signs of Thalassemia.")
 
-uploaded_file = st.file_uploader("📁 Upload Image", type=["jpg", "jpeg", "png"])
+uploaded_file = st.file_uploader("📁 Upload an Image", type=["png", "jpg", "jpeg"])
 
 if uploaded_file is not None:
     image = Image.open(uploaded_file).convert("RGB")
     st.image(image, caption="Uploaded Image", use_column_width=True)
 
-    # Preprocess the image
+    # Preprocess
     image = image.resize(IMG_SIZE)
-    image_array = np.array(image) / 255.0
-    image_array = np.expand_dims(image_array, axis=0)
+    img_array = np.array(image) / 255.0
+    img_array = np.expand_dims(img_array, axis=0)
 
     # Predict
-    prediction = model.predict(image_array)[0][0]
+    prediction = model.predict(img_array)[0][0]
     label = "Thalassemia" if prediction > THRESHOLD else "Normal"
-    color = "🟥" if label == "Thalassemia" else "🟩"
+    emoji = "🟥" if label == "Thalassemia" else "🟩"
 
-    st.markdown(f"## {color} Prediction: **{label}**")
+    st.markdown(f"## {emoji} Prediction: **{label}**")
     st.markdown(f"**Confidence:** `{prediction:.2f}`")
