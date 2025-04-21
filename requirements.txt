@@ -1,5 +1,8 @@
 streamlit
 tensorflow
-pillow
 numpy
+Pillow
 gdown
+tensorflow==2.12
+keras==2.12
+tensorflow-addons==0.20.0
