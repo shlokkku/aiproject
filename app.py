@@ -101,7 +101,7 @@ if uploaded_file is not None:
             emoji = "🟥" if label == "Thalassemia" else "🟩"
             
             st.markdown(f"### {emoji} Result: {label}")
-            st.markdown(f"Confidence Score: `{prediction:.4f}`")
+           
             
             # Recommendation based on result
             if label == "Thalassemia":
