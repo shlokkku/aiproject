@@ -55,6 +55,6 @@ if uploaded_file is not None:
         label = "Thalassemia" if prediction > THRESHOLD else "Normal"
         emoji = "🟥" if label == "Thalassemia" else "🟩"
         st.markdown(f"## {emoji} Prediction: **{label}**")
-        st.markdown(f"**Confidence:** `{prediction:.2f}`")
+       
     except Exception as e:
         st.error(f"Error making prediction: {e}")
