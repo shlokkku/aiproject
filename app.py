@@ -17,7 +17,11 @@ if not os.path.exists(MODEL_H5):
         gdown.download(f"https://drive.google.com/uc?id={DRIVE_FILE_ID}", MODEL_H5, quiet=False)
 
 # Load model
-model = tf.keras.models.load_model(MODEL_H5, compile=False)
+try:
+    model = tf.keras.models.load_model(MODEL_H5)
+except Exception as e:
+    st.error(f"Error loading model: {e}")
+    st.stop()
 
 # App UI
 st.title("🩸 Thalassemia Detection App")
@@ -34,10 +38,15 @@ if uploaded_file is not None:
     img_array = np.array(image) / 255.0
     img_array = np.expand_dims(img_array, axis=0)
 
-    # Predict
-    prediction = model.predict(img_array)[0][0]
-    label = "Thalassemia" if prediction > THRESHOLD else "Normal"
-    emoji = "🟥" if label == "Thalassemia" else "🟩"
+    # Debugging: Check input shape
+    st.write(f"Image Shape: {img_array.shape}")
 
-    st.markdown(f"## {emoji} Prediction: **{label}**")
-    st.markdown(f"**Confidence:** `{prediction:.2f}`")
+    # Predict
+    try:
+        prediction = model.predict(img_array)[0][0]
+        label = "Thalassemia" if prediction > THRESHOLD else "Normal"
+        emoji = "🟥" if label == "Thalassemia" else "🟩"
+        st.markdown(f"## {emoji} Prediction: **{label}**")
+        st.markdown(f"**Confidence:** `{prediction:.2f}`")
+    except Exception as e:
+        st.error(f"Error making prediction: {e}")
